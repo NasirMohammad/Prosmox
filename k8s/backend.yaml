@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: three-tier
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: erfanasir/real-backend:v1
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DB_HOST
+              value: postgres
+            - name: DB_USER
+              value: appuser
+            - name: DB_PASS
+              value: apppass123
+            - name: DB_NAME
+              value: appdb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: three-tier
+spec:
+  type: NodePort
+  selector:
+    app: backend
+  ports:
+    - port: 80
+      targetPort: 3000
+      nodePort: 32760
